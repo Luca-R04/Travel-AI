@@ -6,11 +6,11 @@ from sklearn.preprocessing import LabelEncoder
 app = Flask(__name__)
 
 # Load the trained model and encoder
-model = joblib.load("C:/Users/lucar/Documents/Avans/Jaar 4/Minor AI/ML/HCAID/Project/model/Travel_AI.pkl")
+model = joblib.load("C:/Users/lucar/Documents/Avans/Jaar 4/Minor AI/ML/HCAID/Travel AI/Good_App/model/Travel_AI.pkl")
 
 # Assume we also saved the encoder to reuse it for decoding predictions
 encoder = LabelEncoder()
-encoder.classes_ = np.load("C:/Users/lucar/Documents/Avans/Jaar 4/Minor AI/ML/HCAID/Project/model/classes.npy", allow_pickle=True)  # Save classes in training script
+encoder.classes_ = np.load("C:/Users/lucar/Documents/Avans/Jaar 4/Minor AI/ML/HCAID/Travel AI/Good_App/model/classes.npy", allow_pickle=True)  # Save classes in training script
 
 @app.route("/")
 def index():

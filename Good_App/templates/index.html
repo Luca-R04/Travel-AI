@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Model Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Predict with Your ML Model</h1>
+    <form id="prediction-form">
+        <label for="input_data">Input Data:</label>
+        <input type="text" id="input_data" name="input_data" placeholder="Enter values separated by commas, e.g., 5000,2,3,1" required>
+        <button type="submit">Predict</button>
+    </form>    
+    <p id="result"></p>
+
+    <script>
+        document.getElementById("prediction-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            const inputData = document.getElementById("input_data").value;
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `input_data=${encodeURIComponent(inputData)}`
+            });
+            
+            const result = await response.json();
+            document.getElementById("result").innerText = `Prediction: ${result.prediction}`;
+        });
+    </script>
+</body>
+</html>
