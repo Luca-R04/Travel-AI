@@ -6,7 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 app = Flask(__name__)
 
 # Load the trained model and encoder
-model = joblib.load("C:/Users/lucar/Documents/Avans/Jaar 4/Minor AI/ML/HCAID/Travel AI/Good_App/model/Biased_Travel_AI.pkl")
+model = joblib.load("C:/Users/lucar/Documents/Avans/Jaar 4/Minor AI/ML/HCAID/Travel AI/Bad_App/model/Biased_Travel_AI.pkl")
 
 # Assume we also saved the encoder to reuse it for decoding predictions
 encoder = LabelEncoder()
