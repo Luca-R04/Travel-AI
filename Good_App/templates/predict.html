@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voorspel Droomvakantie</title>
+    {{ bootstrap.load_css() }}
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <!-- Verander container naar container-fluid om de volledige breedte te benutten -->
+      <!-- Navbar -->
+      <nav
+        class="navbar navbar-expand-lg navbar-light bg-light navbar-fullwidth"
+      >
+        <ul class="navbar-nav w-100">
+          <!-- Voeg w-100 toe om ervoor te zorgen dat de ul de volledige breedte neemt -->
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="./">Home</a>
+          </li>
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="/voorspel">Voorspel</a>
+          </li>
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="/over_de_ai">Over de AI</a>
+          </li>
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="/feedback">Feedback</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <div class="container">
+      <!-- Form Section -->
+      <div class="row mt-4">
+        <div class="col-md-6">
+          <form id="prediction-form">
+            <div class="form-group">
+              <label for="budget">Budget</label>
+              <select class="form-control" id="budget" name="budget">
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="climate">Gewenst klimaat</label>
+              <select class="form-control" id="climate" name="climate">
+                <option>Tropical</option>
+                <option>Temperate</option>
+                <option>Cold</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="activities">Activiteiten</label>
+              <select class="form-control" id="activities" name="activities">
+                <option>Adventure</option>
+                <option>Sightseeing</option>
+                <option>Relaxation</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="companions">Reisgenootschap</label>
+              <select class="form-control" id="companions" name="companions">
+                <option>Solo</option>
+                <option>Couple</option>
+                <option>Family</option>
+                <option>Friends</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="language">Gesproken taal</label>
+              <select class="form-control" id="language" name="language">
+                <option>Any</option>
+                <option>Portuguese</option>
+                <option>Japanese</option>
+                <option>English</option>
+                <option>Local Language</option>
+              </select>
+            </div>
+            <input
+              type="submit"
+              value="Voorspel"
+              class="btn btn-primary mt-3"
+            />
+          </form>
+        </div>
+
+        <div class="col-md-6">
+          <p>
+            Geef links jouw voorkeuren voor jouw droomvakantie aan, op basis van
+            deze gegevens kan de AI een suggestie doen over wat hij denkt dat
+            jouw droombestemming is!
+          </p>
+          <p>
+            Hoe meer velden je invult, hoe preciezer de AI jouw droombestemming
+            kan voorspellen en dus hoe hoger de kans dat jij jouw echte
+            droombestemming vindt!
+          </p>
+          <p>
+            Zodra je op de voorspel knop drukt komt hier jouw voorspelde
+            droomvakantie te staan!
+          </p>
+          <p class="privacy-text">Iets over privacy hier,</p>
+          <div id="result"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("prediction-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const formData =
+            document.forms["prediction-form"]["budget"].value +
+            "," +
+            document.forms["prediction-form"]["climate"].value +
+            "," +
+            document.forms["prediction-form"]["activities"].value +
+            "," +
+            document.forms["prediction-form"]["companions"].value +
+            "," +
+            document.forms["prediction-form"]["language"].value;
+
+          console.log(formData);
+          const response = await fetch("/predict", {
+            method: "POST",
+            body: JSON.stringify({
+              data: formData,
+            }),
+          });
+
+          const result = await response.json();
+          document.getElementById("result").innerHTML = result.prediction;
+        });
+    </script>
+
+    {{ bootstrap.load_js() }}
+  </body>
+</html>

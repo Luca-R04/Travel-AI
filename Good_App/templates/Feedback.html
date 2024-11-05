@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voorspel Droomvakantie</title>
+    {{ bootstrap.load_css() }}
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <!-- Verander container naar container-fluid om de volledige breedte te benutten -->
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-fullwidth">
+        <ul class="navbar-nav w-100">
+          <!-- Voeg w-100 toe om ervoor te zorgen dat de ul de volledige breedte neemt -->
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="./">Home</a>
+          </li>
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="/voorspel">Voorspel</a>
+          </li>
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="/over_de_ai">Over de AI</a>
+          </li>
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="/feedback">Feedback</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <div class="feedback-section">
+      <h2>We horen graag jouw mening!</h2>
+      <p class="intro-text">
+        Jouw feedback helpt ons om Travel GPT continu te verbeteren. Of je nu tevreden bent of suggesties hebt om onze service nog beter te maken – we waarderen elk inzicht. Laat ons weten wat je van je ervaring vond, zodat we samen de perfecte reis kunnen blijven creëren!
+      </p>
+    
+      <form class="feedback-form">
+        <label for="feedback">Feedback</label>
+        <textarea id="feedback" name="feedback" rows="8"></textarea>
+    
+        <div class="email-section">
+          <label for="email">E-mail address</label>
+          <input type="email" id="email" name="email" placeholder="Optioneel">
+    
+          <p class="email-note">
+            Als je jouw e-mail address achterlaat kunnen wij contact opnemen over jouw feedback, maar dit is niet verplicht!
+          </p>
+        </div>
+    
+        <button type="submit" class="btn-primary">Verstuur feedback</button>
+      </form>
+    </div>
+  </body>
+</html>

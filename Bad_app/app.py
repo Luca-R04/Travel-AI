@@ -2,8 +2,12 @@ from flask import Flask, render_template, request, jsonify
 import joblib
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
+from flask_bootstrap import Bootstrap5
+from flask import Flask
 
 app = Flask(__name__)
+
+bootstrap = Bootstrap5(app)
 
 # Load the trained model and encoder
 model = joblib.load("C:/Users/lucar/Documents/Avans/Jaar 4/Minor AI/ML/HCAID/Travel AI/Bad_App/model/Biased_Travel_AI.pkl")
