@@ -1,9 +1,13 @@
+import base64
+from io import BytesIO
 from flask import Flask, render_template, request, jsonify
 from sklearn.preprocessing import LabelEncoder
 import joblib
 import numpy as np
 from flask_bootstrap import Bootstrap5
 import json
+import matplotlib.pyplot as plt
+import random
 
 app = Flask(__name__)
 bootstrap = Bootstrap5(app)
@@ -50,6 +54,64 @@ def predict():
     encoded_prediction = model.predict(encoded_input)
     prediction = encoder.inverse_transform(encoded_prediction)
 
+    # Split the prediction
+    split_prediction = prediction[0].split(" - ")
+
+    destination = split_prediction[0]
+    accommodation_type = split_prediction[1]
+
+    # Generate prices based on accommodation type
+    if accommodation_type == "hotel":
+        price = random.randint(250, 750)
+        acc_img = "../static/Hotel.png"
+    elif accommodation_type == "resort":
+        price = random.randint(750, 2000)
+        acc_img = "../static/Resort.png"
+    else:  # hostel
+        price = random.randint(50, 250)
+        acc_img = "../static/Hostel.png"
+
+    # Generate the card HTML for booking links
+    booking_card_html = f"""
+    <div class="card" style="width: 12rem;">
+      <img src="{acc_img}" class="card-img-top" alt="destination image" style="width: 100%; height: 150px; object-fit: cover;">
+      <div class="card-body">
+        <h5 class="card-title">{destination}</h5>
+        <p class="card-text">Price: €{price}</p>
+        <a href="https://booking/{destination.lower()}/{accommodation_type}" class="btn btn-primary" target="_blank">Book {accommodation_type.capitalize()}</a>
+      </div>
+    </div>
+    """
+
+    # Generate alternative accommodation cards
+    alternative_cards_html = "<div class='row'>"
+    accommodation_types = ["hotel", "resort", "hostel"]
+
+    for alt_type in accommodation_types:
+        # Generate price for alternative accommodations
+        if alt_type == "hotel":
+            alt_price = random.randint(250, 750)
+            alt_acc_img = "../static/Hotel.png"
+        elif alt_type == "resort":
+            alt_price = random.randint(750, 2000)
+            alt_acc_img = "../static/Resort.png"
+        else:  # hostel
+            alt_price = random.randint(50, 250)
+            alt_acc_img = "../static/Hostel.png"
+
+        alternative_cards_html += f"""
+        <div class="col-md-4 mb-3">
+          <div class="card">
+            <img src="{alt_acc_img}" class="card-img-top" alt="destination image" style="width: 100%; height: 100px; object-fit: cover;">
+            <div class="card-body">
+              <h5 class="card-title">{destination}</h5>
+              <p class="card-text">Price: €{alt_price}</p>
+              <a href="https://booking/{destination.lower()}/{alt_type}" class="btn btn-secondary" target="_blank">Book {alt_type.capitalize()}</a>
+            </div>
+          </div>
+        </div>
+        """
+    alternative_cards_html += "</div>"
 
     # Track decision path and calculate feature influences recursively
     tree = model.tree_
@@ -65,7 +127,7 @@ def predict():
     # Normalize feature influences to percentages
     total_influence = feature_influence.sum()
     percentage_influences = (feature_influence / total_influence * 100).round(2)
-    feature_names = ['Budget', 'Klimaat', 'Activiteiten', 'Reisgenootschap']
+    feature_names = ['Budget', 'Klimaat', 'Activiteit', 'Genootschap']
 
     # Generate HTML table for decision path influence
     influence_table_html = "<table><tr><th>Factor</th><th>Impact</th></tr>"
@@ -73,39 +135,40 @@ def predict():
         influence_table_html += f"<tr><td>{feature}</td><td>{influence}%</td></tr>"
     influence_table_html += "</table>"
 
-    # Generate booking links
-    split_prediction = prediction[0].split(" - ")
+    # Generate bar chart
+    fig, ax = plt.subplots(figsize=(6, 4))
+    fig.patch.set_facecolor('#FFF9D9') 
+    ax.set_facecolor('#FFF9D9')
+    ax.bar(feature_names, percentage_influences, color='#3498db')
+    ax.set_xlabel('Percentage Invloed (%)')
+    ax.set_title('Invloed op voorspelling')
 
-    if split_prediction[1] == "hotel":
-        booking_link = f"https://booking/{split_prediction[0].lower()}/hotel"
-        alternative_links = [
-            f"https://booking/{split_prediction[0].lower()}/hostel",
-            f"https://booking/{split_prediction[0].lower()}/resort"
-        ]   
-    elif split_prediction[1] == "resort":
-        booking_link = f"https://booking/{split_prediction[0].lower()}/resort"
-        alternative_links = [
-            f"https://booking/{split_prediction[0].lower()}/hostel",
-            f"https://booking/{split_prediction[0].lower()}/hotel"
-        ]   
-    else:
-        booking_link = f"https://booking/{split_prediction[0].lower()}/hostel"
-        alternative_links = [
-            f"https://booking/{split_prediction[0].lower()}/hotel",
-            f"https://booking/{split_prediction[0].lower()}/resort"
-        ]   
+    # Convert the plot to a base64 string
+    img_buf = BytesIO()
+    plt.savefig(img_buf, format='png')
+    img_buf.seek(0)
+    img_str = base64.b64encode(img_buf.read()).decode('utf-8')
+    img_buf.close()
 
-    # Create HTML output
+    # Embed the image in HTML
+    chart_html = f'<img src="data:image/png;base64,{img_str}" alt="Invloed op voorspelling"/>'
+
+    # Return the final HTML with the booking card, alternatives, and plot
     result_html = f"""
-    <p>Jouw droombestemming is: <strong>{prediction[0]}</strong></p>
-    <p>Boek nu: <a href="{booking_link}" target="_blank">{booking_link}</a></p>
-    <p>Liever een andere accommodatie?</p>
-    <ul>
-        <li><a href="{alternative_links[0]}" target="_blank">{alternative_links[0]}</a></li>
-        <li><a href="{alternative_links[1]}" target="_blank">{alternative_links[1]}</a></li>
-    </ul>
-    <p>Invloed van elke input op het resultaat:</p>
-    {influence_table_html}
+    <h4>Je droombestemming: <strong>{"A " + accommodation_type + " in " + destination}</strong></h4>
+    <div class="card-deck">
+        {booking_card_html}
+    </div>
+    <h5>Toch een andere accomodatie?</h5>
+    <div class="card-deck">
+        {alternative_cards_html}
+    </div>
+    <p>De onderstaande grafiek laat zien hoeveel invloed elk antwoord gehad heeft op de uitkomst.
+    <br />
+    Houd er rekening mee dat deze percentages beïnvloedt kunnen worden door de nauwkeurigheid van het model. 
+    <br />
+    Sommige factoren kunnen aan het begin van het voorspellen al invloedrijk zijn maar later minder gebruikt worden.<p>
+    {chart_html}
     """
 
     return jsonify(prediction=result_html)

@@ -3,7 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.googleapis.com/css2?family=Italianno&display=swap" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Italianno&display=swap"
+      rel="stylesheet"
+    />
     <title>Voorspel Droomvakantie</title>
     {{ bootstrap.load_css() }}
     <link
@@ -15,7 +23,9 @@
     <div class="container-fluid">
       <!-- Verander container naar container-fluid om de volledige breedte te benutten -->
       <!-- Navbar -->
-      <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-fullwidth">
+      <nav
+        class="navbar navbar-expand-lg navbar-light bg-light navbar-fullwidth"
+      >
         <ul class="navbar-nav w-100">
           <!-- Voeg w-100 toe om ervoor te zorgen dat de ul de volledige breedte neemt -->
           <li class="nav-item flex-fill text-center">
@@ -36,24 +46,73 @@
     <div class="feedback-section">
       <h2>We horen graag jouw mening!</h2>
       <p class="intro-text">
-        Jouw feedback helpt ons om Travel GPT continu te verbeteren. Of je nu tevreden bent of suggesties hebt om onze service nog beter te maken – we waarderen elk inzicht. Laat ons weten wat je van je ervaring vond, zodat we samen de perfecte reis kunnen blijven creëren!
+        Jouw feedback helpt ons om Travel GPT continu te verbeteren. Of je nu
+        tevreden bent of suggesties hebt om onze service nog beter te maken – we
+        waarderen elk inzicht. Laat ons weten wat je van je ervaring vond, zodat
+        we samen de perfecte reis kunnen blijven creëren!
       </p>
-    
-      <form class="feedback-form">
+
+      <form class="feedback-form" id="feedbackForm">
         <label for="feedback">Feedback</label>
         <textarea id="feedback" name="feedback" rows="8"></textarea>
-    
+
         <div class="email-section">
           <label for="email">E-mail address</label>
-          <input type="email" id="email" name="email" placeholder="Optioneel">
-    
+          <input type="email" id="email" name="email" placeholder="Optioneel" />
+
           <p class="email-note">
-            Als je jouw e-mail address achterlaat kunnen wij contact opnemen over jouw feedback, maar dit is niet verplicht!
+            Als je jouw e-mail address achterlaat kunnen wij contact opnemen
+            over jouw feedback, maar dit is niet verplicht! Dit wordt niet voor
+            andere doeleinden gebruikt.
           </p>
         </div>
-    
+
         <button type="submit" class="btn-primary">Verstuur feedback</button>
       </form>
     </div>
+
+    <div
+      class="toast-container position-fixed bottom-0 end-0 p-3"
+      id="toastContainer"
+    >
+      <div
+        class="toast text-white"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="toast-header" style="background-color: #3498db">
+          <strong class="me-auto" style="color: white"
+            >Feedback successfully submitted!</strong
+          >
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Get the form and toast elements
+      const form = document.getElementById("feedbackForm");
+      const toastContainer = document.getElementById("toastContainer");
+      const toastElement = toastContainer.querySelector(".toast");
+      const toast = new bootstrap.Toast(toastElement);
+
+      // Form submission handler
+      form.addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent form submission to avoid page reload
+
+        // You can handle feedback data here if needed, like sending it via AJAX
+        // For now, just show the toast message
+        toast.show();
+
+        // Optionally, reset the form after submission
+        form.reset();
+      });
+    </script>
   </body>
 </html>
