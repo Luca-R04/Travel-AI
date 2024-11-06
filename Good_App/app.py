@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, jsonify
 from sklearn.preprocessing import LabelEncoder
 import joblib
 import numpy as np
-import shap  # Import SHAP for interpretability
 from flask_bootstrap import Bootstrap5
 import json
 
@@ -51,10 +50,7 @@ def predict():
     encoded_prediction = model.predict(encoded_input)
     prediction = encoder.inverse_transform(encoded_prediction)
 
-    # Calculate SHAP values for the single instance
-    explainer = shap.TreeExplainer(model)
-    shap_values = explainer.shap_values(encoded_input)
-    
+
     # Track decision path and calculate feature influences recursively
     tree = model.tree_
     node_indicator = tree.decision_path(encoded_input)
@@ -69,7 +65,7 @@ def predict():
     # Normalize feature influences to percentages
     total_influence = feature_influence.sum()
     percentage_influences = (feature_influence / total_influence * 100).round(2)
-    feature_names = ['Budget', 'Climate', 'Activities', 'Companions']
+    feature_names = ['Budget', 'Klimaat', 'Activiteiten', 'Reisgenootschap']
 
     # Generate HTML table for decision path influence
     influence_table_html = "<table><tr><th>Factor</th><th>Impact</th></tr>"
