@@ -4,6 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Italianno&display=swap" rel="stylesheet">
     <title>Voorspel Droomvakantie</title>
     {{ bootstrap.load_css() }}
     <link
@@ -35,72 +36,58 @@
         </ul>
       </nav>
     </div>
-    <div class="container">
+    <div class="container predict-page">
       <!-- Form Section -->
+      <h2 class="center-title">Voorspel je droomvakantie besteming!</h2>
       <div class="row mt-4">
         <div class="col-md-6">
           <form id="prediction-form">
             <div class="form-group">
               <label for="budget">Budget</label>
               <select class="form-control" id="budget" name="budget">
-                <option>Low</option>
-                <option>Medium</option>
-                <option>High</option>
+                <option>Laag</option>
+                <option>Midden</option>
+                <option>Hoog</option>
               </select>
             </div>
             <div class="form-group">
               <label for="climate">Gewenst klimaat</label>
               <select class="form-control" id="climate" name="climate">
-                <option>Tropical</option>
-                <option>Temperate</option>
-                <option>Cold</option>
+                <option>Tropisch</option>
+                <option>Gematigd</option>
+                <option>Koud</option>
               </select>
             </div>
             <div class="form-group">
               <label for="activities">Activiteiten</label>
               <select class="form-control" id="activities" name="activities">
-                <option>Adventure</option>
+                <option>Avontuur</option>
                 <option>Sightseeing</option>
-                <option>Relaxation</option>
+                <option>Ontspannen</option>
               </select>
             </div>
             <div class="form-group">
               <label for="companions">Reisgenootschap</label>
               <select class="form-control" id="companions" name="companions">
-                <option>Solo</option>
-                <option>Couple</option>
-                <option>Family</option>
-                <option>Friends</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="language">Gesproken taal</label>
-              <select class="form-control" id="language" name="language">
-                <option>Any</option>
-                <option>Portuguese</option>
-                <option>Japanese</option>
-                <option>English</option>
-                <option>Local Language</option>
+                <option>Alleen</option>
+                <option>Koppel</option>
+                <option>Famillie</option>
+                <option>Vrienden</option>
               </select>
             </div>
             <input
-              type="submit"
-              value="Voorspel"
-              class="btn btn-primary mt-3"
+            type="submit"
+            value="Voorspel"
+            class="btn btn-primary mt-3"
             />
           </form>
         </div>
-
-        <div class="col-md-6">
+        
+        <div class="col-md-6 border-left" id="hide">
           <p>
             Geef links jouw voorkeuren voor jouw droomvakantie aan, op basis van
             deze gegevens kan de AI een suggestie doen over wat hij denkt dat
             jouw droombestemming is!
-          </p>
-          <p>
-            Hoe meer velden je invult, hoe preciezer de AI jouw droombestemming
-            kan voorspellen en dus hoe hoger de kans dat jij jouw echte
-            droombestemming vindt!
           </p>
           <p>
             Zodra je op de voorspel knop drukt komt hier jouw voorspelde
@@ -125,9 +112,7 @@
             "," +
             document.forms["prediction-form"]["activities"].value +
             "," +
-            document.forms["prediction-form"]["companions"].value +
-            "," +
-            document.forms["prediction-form"]["language"].value;
+            document.forms["prediction-form"]["companions"].value;
 
           console.log(formData);
           const response = await fetch("/predict", {

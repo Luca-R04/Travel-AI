@@ -2,26 +2,22 @@ from flask import Flask, render_template, request, jsonify
 from sklearn.preprocessing import LabelEncoder
 import joblib
 import numpy as np
+import shap  # Import SHAP for interpretability
 from flask_bootstrap import Bootstrap5
 import json
 
 app = Flask(__name__)
-
 bootstrap = Bootstrap5(app)
 
-# Load the trained model
-model = joblib.load("C:/Users/lucar/Documents/Avans/Jaar 4/Minor AI/ML/HCAID/Travel AI/Good_App/model/NL_Travel_AI.pkl")
-
-# Assume we also saved the encoder to reuse it for decoding predictions
+model = joblib.load("C:/Users/lucar/Documents/Avans/Jaar 4/Minor AI/ML/HCAID/Travel AI/Good_App/model/No_Language_Travel_AI.pkl")
 encoder = LabelEncoder()
-encoder.classes_ = np.load("C:/Users/lucar/Documents/Avans/Jaar 4/Minor AI/ML/HCAID/Travel AI/Good_App/model/classes.npy", allow_pickle=True)  # Save classes in training script
+encoder.classes_ = np.load("C:/Users/lucar/Documents/Avans/Jaar 4/Minor AI/ML/HCAID/Travel AI/Good_App/model/classes.npy", allow_pickle=True)
 
 # Define the mapping dictionaries
-budget_map = {"Low": 1, "Medium": 2, "High": 3}
-climate_map = {"Tropical": 1, "Temperate": 2, "Cold": 3}
-activities_map = {"Adventure": 1, "Sightseeing": 2, "Relaxation": 3}
-companions_map = {"Solo": 1, "Couple": 2, "Family": 3, "Friends": 4}
-language_map = {"Portuguese": 1, "Japanese": 2, "English": 3, "Local Language": 4}
+budget_map = {"Laag": 1, "Midden": 2, "Hoog": 3}
+climate_map = {"Tropisch": 1, "Gematigd": 2, "Koud": 3}
+activities_map = {"Avontuur": 1, "Sightseeing": 2, "Ontspannen": 3}
+companions_map = {"Alleen": 1, "Koppel": 2, "Famillie": 3, "Vrienden": 4}
 
 @app.route("/")
 def index():
@@ -39,59 +35,81 @@ def about():
 def prediction():
     return render_template("predict.html")
 
-
-@app.route('/predict', methods=['POST'])
+@app.route("/predict", methods=['POST'])
 def predict():
-    # Get input data from form
     data = json.loads(request.data.decode("utf-8")).get('data')
-
-    # Parse input data; assume data comes in the order of: budget, climate, activities, companions, language, destination
-    budget, climate, activities, companions, language = data.split(',')
+    budget, climate, activities, companions = data.split(',')
 
     # Encode input data using predefined maps
     encoded_input = np.array([
-        budget_map.get(budget.strip(), 0),    # Default to 0 if not found
+        budget_map.get(budget.strip(), 0),
         climate_map.get(climate.strip(), 0),
         activities_map.get(activities.strip(), 0),
         companions_map.get(companions.strip(), 0),
-        # language_map.get(language.strip(), 0),
-    ]).reshape(1, -1)
+    ], dtype=np.float32).reshape(1, -1)  # Ensure dtype is np.float32
 
-    print(encoded_input)
-
-    # Predict the class
     encoded_prediction = model.predict(encoded_input)
+    prediction = encoder.inverse_transform(encoded_prediction)
 
-    print(encoded_prediction)
+    # Calculate SHAP values for the single instance
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer.shap_values(encoded_input)
     
-    # Since you may want to decode the prediction, ensure your destination map is correctly structured
-    # This assumes encoded_prediction corresponds directly to the destination mapping.
-    prediction = encoder.inverse_transform(encoded_prediction)  # Get the destination name from the map
+    # Track decision path and calculate feature influences recursively
+    tree = model.tree_
+    node_indicator = tree.decision_path(encoded_input)
+    feature_influence = np.zeros(encoded_input.shape[1])
 
-    # WIP?
-    # booking_link = f"https://booking/{prediction.replace(' ', '-').lower()}/hotel"
-    # alternative_links = [
-    #     f"https://booking/{prediction.replace(' ', '-').lower()}/hostel",
-    #     f"https://booking/{prediction.replace(' ', '-').lower()}/resort"
-    # ]    
+    for node_index in node_indicator.indices:
+        # If this node uses a feature to make a split
+        if tree.feature[node_index] != -2:  # -2 indicates a leaf node
+            feature_index = tree.feature[node_index]
+            feature_influence[feature_index] += abs(tree.threshold[node_index] - encoded_input[0, feature_index])
 
-    # Example destination for demonstration
-    booking_link = f"https://booking/temp/hotel"
-    alternative_links = [
-        f"https://booking/temp/hostel",
-        f"https://booking/temp/resort"
-    ]    
+    # Normalize feature influences to percentages
+    total_influence = feature_influence.sum()
+    percentage_influences = (feature_influence / total_influence * 100).round(2)
+    feature_names = ['Budget', 'Climate', 'Activities', 'Companions']
 
-    # Create an HTML snippet to be displayed on the page
+    # Generate HTML table for decision path influence
+    influence_table_html = "<table><tr><th>Factor</th><th>Impact</th></tr>"
+    for feature, influence in zip(feature_names, percentage_influences):
+        influence_table_html += f"<tr><td>{feature}</td><td>{influence}%</td></tr>"
+    influence_table_html += "</table>"
+
+    # Generate booking links
+    split_prediction = prediction[0].split(" - ")
+
+    if split_prediction[1] == "hotel":
+        booking_link = f"https://booking/{split_prediction[0].lower()}/hotel"
+        alternative_links = [
+            f"https://booking/{split_prediction[0].lower()}/hostel",
+            f"https://booking/{split_prediction[0].lower()}/resort"
+        ]   
+    elif split_prediction[1] == "resort":
+        booking_link = f"https://booking/{split_prediction[0].lower()}/resort"
+        alternative_links = [
+            f"https://booking/{split_prediction[0].lower()}/hostel",
+            f"https://booking/{split_prediction[0].lower()}/hotel"
+        ]   
+    else:
+        booking_link = f"https://booking/{split_prediction[0].lower()}/hostel"
+        alternative_links = [
+            f"https://booking/{split_prediction[0].lower()}/hotel",
+            f"https://booking/{split_prediction[0].lower()}/resort"
+        ]   
+
+    # Create HTML output
     result_html = f"""
-    <p>Jouw droombestemming is: <strong>{prediction}</strong></p>
+    <p>Jouw droombestemming is: <strong>{prediction[0]}</strong></p>
     <p>Boek nu: <a href="{booking_link}" target="_blank">{booking_link}</a></p>
     <p>Liever een andere accommodatie?</p>
     <ul>
         <li><a href="{alternative_links[0]}" target="_blank">{alternative_links[0]}</a></li>
         <li><a href="{alternative_links[1]}" target="_blank">{alternative_links[1]}</a></li>
     </ul>
-    <p>Deze resultaten zijn gebaseerd op:</p>
+    <p>Invloed van elke input op het resultaat:</p>
+    {influence_table_html}
     """
 
     return jsonify(prediction=result_html)

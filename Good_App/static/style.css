@@ -77,10 +77,31 @@ body {
   
   /* Titelstijl */
   .feedback-section h2 {
-    font-family: 'Brush Script MT', cursive;
+    font-family: 'Italianno';
     font-size: 2.5em;
     color: #655521;
     margin: 10px 0px;
+  }
+
+  .center-title {
+    font-family: 'Italianno', cursive;
+    font-size: 2.5em;
+    color: #655521;
+    margin: 10px 0;
+    text-align: center; /* Centreert de tekst */
+  }
+  
+  .predict-page {
+    padding: 20px;
+  }
+
+  .predict-page .form-group {
+    margin-bottom: 20px;
+  }
+
+  .border-left {
+    border-left: 1px solid #655521; /* Kleur van de lijn */
+    height: 100%; /* Zorg ervoor dat de lijn de hele hoogte van de kolom beslaat */
   }
   
   /* Introductietekststijl */
