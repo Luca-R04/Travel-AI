@@ -47,24 +47,18 @@
       <h2>We horen graag jouw mening!</h2>
       <p class="intro-text">
         Jouw feedback helpt ons om Travel GPT continu te verbeteren. Of je nu
-        tevreden bent of suggesties hebt om onze service nog beter te maken – we
+        tevreden bent of suggesties hebt om onze service nog beter te maken we
         waarderen elk inzicht. Laat ons weten wat je van je ervaring vond, zodat
         we samen de perfecte reis kunnen blijven creëren!
       </p>
 
       <form class="feedback-form" id="feedbackForm">
         <label for="feedback">Feedback</label>
-        <textarea id="feedback" name="feedback" rows="8"></textarea>
+        <textarea id="feedback" name="feedback" rows="8" required></textarea>
 
         <div class="email-section">
           <label for="email">E-mail address</label>
-          <input type="email" id="email" name="email" placeholder="Optioneel" />
-
-          <p class="email-note">
-            Als je jouw e-mail address achterlaat kunnen wij contact opnemen
-            over jouw feedback, maar dit is niet verplicht! Dit wordt niet voor
-            andere doeleinden gebruikt.
-          </p>
+          <input type="email" id="email" name="email" required/>
         </div>
 
         <button type="submit" class="btn-primary">Verstuur feedback</button>
@@ -81,9 +75,9 @@
         aria-live="assertive"
         aria-atomic="true"
       >
-        <div class="toast-header" style="background-color: #3498db">
+        <div class="toast-header" style="background-color: red">
           <strong class="me-auto" style="color: white"
-            >Feedback succesvol verstuurd!</strong
+            >Er ging iets fout, probeer het later opnieuw!</strong
           >
           <button
             type="button"

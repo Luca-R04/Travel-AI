@@ -78,7 +78,7 @@ def predict():
       <div class="card-body">
         <h5 class="card-title">{destination}</h5>
         <p class="card-text">Price: €{price}</p>
-        <a href="https://booking/{destination.lower()}/{accommodation_type}" class="btn btn-primary" target="_blank">Book {accommodation_type.capitalize()}</a>
+        <a href="https://booking/{destination.lower()}/{accommodation_type}" class="btn btn-primary" target="_blank">Boek {accommodation_type.capitalize()}</a>
       </div>
     </div>
     """
@@ -106,7 +106,7 @@ def predict():
             <div class="card-body">
               <h5 class="card-title">{destination}</h5>
               <p class="card-text">Price: €{alt_price}</p>
-              <a href="https://booking/{destination.lower()}/{alt_type}" class="btn btn-secondary" target="_blank">Book {alt_type.capitalize()}</a>
+              <a href="https://booking/{destination.lower()}/{alt_type}" class="btn btn-secondary" target="_blank">Boek {alt_type.capitalize()}</a>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ def predict():
 
     # Return the final HTML with the booking card, alternatives, and plot
     result_html = f"""
-    <h4>Je droombestemming: <strong>{"A " + accommodation_type + " in " + destination}</strong></h4>
+    <h4>Je droombestemming: <strong>{"Een " + accommodation_type + " in " + destination}</strong></h4>
     <div class="card-deck">
         {booking_card_html}
     </div>
