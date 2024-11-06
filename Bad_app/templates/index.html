@@ -1,34 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ML Model Prediction</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <h1>Predict with Your ML Model</h1>
-    <form id="prediction-form">
-        <label for="input_data">Input Data:</label>
-        <input type="text" id="input_data" name="input_data" placeholder="Enter values separated by commas, e.g., 5000,2,3,1" required>
-        <button type="submit">Predict</button>
-    </form>    
-    <p id="result"></p>
-
-    <script>
-        document.getElementById("prediction-form").addEventListener("submit", async function(event) {
-            event.preventDefault();
-            
-            const inputData = document.getElementById("input_data").value;
-            const response = await fetch("/predict", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: `input_data=${encodeURIComponent(inputData)}`
-            });
-            
-            const result = await response.json();
-            document.getElementById("result").innerText = `Prediction: ${result.prediction}`;
-        });
-    </script>
-</body>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Italianno&display=swap" rel="stylesheet">
+    <title>Voorspel Droomvakantie</title>
+    {{ bootstrap.load_css() }}
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <!-- Verander container naar container-fluid om de volledige breedte te benutten -->
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-fullwidth">
+        <ul class="navbar-nav w-100">
+          <!-- Voeg w-100 toe om ervoor te zorgen dat de ul de volledige breedte neemt -->
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="./">Home</a>
+          </li>
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="/voorspel">Voorspel</a>
+          </li>
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="/over_de_ai">Over de AI</a>
+          </li>
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link" href="/feedback">Feedback</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <div class="welcome-section">
+      <div class="content-container">
+        <div class="text-content">
+          <h1>Travel GPT</h1>
+          <p class="intro-text">
+            Welkom bij Travel GPT - jouw persoonlijke vakantie-expert aangedreven door AI! Wij begrijpen dat het kiezen van de perfecte vakantiebestemming vaak overweldigend kan zijn. Van zonnige stranden en bruisende steden tot afgelegen natuurparadijzen, de mogelijkheden lijken eindeloos. Daarom is Travel GPT speciaal ontwikkeld om jou te helpen die éne bestemming te vinden die echt bij je past.
+          </p>
+          
+          <p class="mission-text">
+            Onze missie? Reizen persoonlijker maken en de drempel verlagen om op zoek te gaan naar de vakantie van je dromen. Met Travel GPT bespaar je tijd en ontdek je plekken waar je misschien nooit eerder aan gedacht had. Wij geloven dat de wereld er is om ontdekt te worden, en met de kracht van AI brengen we jouw ideale vakantiebestemming dichterbij dan ooit.
+          </p>
+          
+          <p class="cta-text">
+            Reis met ons mee en laat Travel GPT jouw volgende avontuur inspireren!
+          </p>
+    
+          <a href="/voorspel">
+            <button class="btn-primary"> Klik hier om te beginnen! </button>
+          </a>
+        </div>
+        
+        <div class="image-content">
+          <img src="../static/strand.png" alt="Strand afbeelding">
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

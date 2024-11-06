@@ -61,10 +61,10 @@ def predict():
     accommodation_type = split_prediction[1]
 
     # Generate prices based on accommodation type
-    if accommodation_type == "hotel":
+    if accommodation_type == "Hotel":
         price = random.randint(250, 750)
         acc_img = "../static/Hotel.png"
-    elif accommodation_type == "resort":
+    elif accommodation_type == "Resort":
         price = random.randint(750, 2000)
         acc_img = "../static/Resort.png"
     else:  # hostel
